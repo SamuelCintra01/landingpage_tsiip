@@ -1,0 +1,29 @@
+.swiper {
+  padding: 32px;
+  width: 50vw;
+}
+
+.swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.swiper-slide-custom {
+}
+.swiper-pagination-bullet-active {
+  background-color: #718096;
+}
+
+.swiper-pagination-bullet {
+  background-color: #fafafa;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+  font-size: 20px; /* Altere o tamanho conforme necessário */
+  color: #718096;
+  transform: scale(0.6); /* Ajuste o valor para mudar o tamanho */
+  padding: 8rem;
+  padding-right: 16rem;
+  padding-left: 16rem;
+}
