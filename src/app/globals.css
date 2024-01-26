@@ -17,11 +17,46 @@
 }
 
 body {
-    color: rgb(var(--foreground-rgb));
+  color: rgb(var(--foreground-rgb));
   background: linear-gradient(
       to bottom,
       transparent,
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+}
+
+.triangle-bottom {
+  width: 0px;
+  height: 0px;
+  border-top: 20vw solid transparent;
+  border-right: 20vw solid #101312; /* Cor azul */
+}
+
+.triangle-top {
+  width: 0px;
+  height: 0px;
+  border-bottom: 20vw solid transparent;
+  border-left: 20vw solid #101312; /* Cor azul */
+}
+
+.banner-size {
+  width: 100%;
+  height: auto;
+}
+
+@media (min-width: 768px) and (max-width: 900px) {
+  .banner-size {
+    margin-top: 2rem;
+    margin-left: 2rem;
+  }
+}
+
+.line-height {
+}
+
+@media (max-width: 455px) {
+  .line-height {
+    height: 12vh;
+  }
 }

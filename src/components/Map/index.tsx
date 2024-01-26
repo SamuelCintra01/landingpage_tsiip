@@ -2,9 +2,6 @@
 
 import { Map, Marker, useMarkerRef } from "@vis.gl/react-google-maps";
 import vitaminCStyles from "./vitamin-style";
-import LogoImage from "../../../public/header/logo.png";
-import Image from "next/image";
-import Card2 from "../../../public/cards/marker.png";
 
 const MapTypeId = {
   HYBRID: "hybrid",
@@ -27,23 +24,47 @@ const MAP_CONFIG = {
 //   mapTypeId: MapTypeId.ROADMAP,
 // };
 
+// const MAP_CONFIG = {
+//   id: "light",
+//   label: "Light",
+//   mapId: "49ae42fed52588c3",
+//   mapTypeId: MapTypeId.ROADMAP,
+// };
 const position = { lat: -22.226214092078873, lng: -45.931093254556444 };
 
 const MapComponent = ({ openModal, setOpenModal }: any) => {
   const [markerRef, marker] = useMarkerRef();
 
   return (
-    <Map
-      // mapId={MAP_CONFIG.mapId}
-      mapTypeId={MAP_CONFIG.mapTypeId}
-      zoom={14}
-      center={position}
-      draggable={false}
-      styles={MAP_CONFIG.styles}
-      gestureHandling={"greedy"}
-      disableDefaultUI={true}
-    >
-      <div
+    <div className="w-full h-full relative flex">
+      <Map
+        // mapId={MAP_CONFIG.mapId}
+        mapTypeId={MAP_CONFIG.mapTypeId}
+        zoom={14}
+        center={position}
+        draggable={false}
+        styles={MAP_CONFIG.styles}
+        gestureHandling={"greedy"}
+        disableDefaultUI={true}
+      >
+
+        <Marker
+          // icon={{
+          //   url: "/img/marker.png",
+          //   scaledSize: { width: 100, height: 100 },
+          // }}
+          ref={markerRef}
+          position={position}
+        ></Marker>
+      </Map>
+      <div className="absolute w-full h-full bg-dark-1000 opacity-40 z-10"></div>
+    </div>
+  );
+};
+
+export default MapComponent;
+{
+  /* <div
         className="bg-dark-1000 absolute w-[calc(25vw)] h-40 opacity-80 rounded-md
       translate-x-[calc(60vw)] translate-y-[calc(15vw)] flex  py-4 px-4 justify-between  "
       >
@@ -69,10 +90,5 @@ const MapComponent = ({ openModal, setOpenModal }: any) => {
             Contrate-nos
           </button>
         </div>
-      </div>
-      <Marker ref={markerRef} position={position} />
-    </Map>
-  );
-};
-
-export default MapComponent;
+      </div> */
+}

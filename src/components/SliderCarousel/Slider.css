@@ -1,5 +1,6 @@
 .swiper {
-  width: 58vw;
+  width: 60vw;
+  height: 110vh;
 }
 
 .swiper-slide {
@@ -8,7 +9,11 @@
   align-items: center;
 }
 .swiper-slide-custom {
+
 }
+.swiper-pagination {
+}
+
 .swiper-pagination-bullet-active {
   background-color: #718096;
 }

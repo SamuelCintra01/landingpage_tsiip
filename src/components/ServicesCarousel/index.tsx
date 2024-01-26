@@ -1,11 +1,16 @@
-import { Swiper, SwiperSlide } from "swiper/react";
+"use client";
+
 import React, { useRef, useState } from "react";
+import Image from "next/image";
+import { motion } from "framer-motion";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import "swiper/css";
+import { Swiper, SwiperSlide } from "swiper/react";
+
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/effect-coverflow";
 import "swiper/swiper-bundle.css";
+import "swiper/css";
 import {
   EffectCoverflow,
   Pagination,
@@ -13,9 +18,8 @@ import {
   A11y,
   Autoplay,
 } from "swiper/modules";
+
 import "./Slider.css";
-import { motion } from "framer-motion";
-import Image from "next/image";
 
 export function ServicesCarousel({ data }: any) {
   const [activeIndex, setActiveIndex] = useState(1);
@@ -68,6 +72,7 @@ export function ServicesCarousel({ data }: any) {
           <SwiperSlide key={item.id}>
             <motion.div
               whileHover={{
+                scale: 0.95,
                 transition: { duration: 0.5 },
               }}
               className="w-[calc(20vw)] px-10 py-12 h-96 bg-dark-0 z-50 mb-12
