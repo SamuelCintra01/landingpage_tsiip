@@ -85,7 +85,7 @@ export function SliderCarousel({ data, security = false }: any) {
               transition: { duration: 0.5 },
             }}
             className=" w-full h-fw-full x items-center justify-center 
-                  flex flex-col rounded-lg text-dark-1000 "
+                  flex flex-col rounded-lg text-black-1000 "
           >
             {/* <div
                 className="w-80 h-80 absolute 

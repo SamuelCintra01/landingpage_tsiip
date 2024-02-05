@@ -8,7 +8,7 @@
   --background-end-rgb: 255, 255, 255;
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: black) {
   :root {
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
@@ -59,4 +59,18 @@ body {
   .line-height {
     height: 12vh;
   }
+}
+
+/* Para navegadores WebKit (Chrome, Safari) */
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px white inset !important; /* Pode variar de acordo com o seu design */
+}
+
+/* Para outros navegadores (Firefox, Edge) */
+input:-moz-placeholder {
+  color: transparent;
+}
+
+input:-ms-input-placeholder {
+  color: transparent;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import LogoImage from "../../public/header/logo.png";
@@ -33,10 +33,9 @@ import { IoMenu } from "react-icons/io5";
 import { AiOutlineClose } from "react-icons/ai";
 import { LiaWindowCloseSolid } from "react-icons/lia";
 
-import { APIProvider } from "@vis.gl/react-google-maps";
 import { InputForm } from "@/components/InputForm";
 import { SliderCarousel } from "@/components/SliderCarousel";
-
+import emailjs from "@emailjs/browser";
 import "../app/globals.css";
 
 const aboutItens = [
@@ -119,14 +118,12 @@ const imgSegurança = [
     src: "/cards/smart-lighting.jpg",
     title: "Iluminação Pública Inteligente",
     alt: "slide-image-1",
-    text: "Cidades Inteligentes otimizam a utilização de recursos em prol da sociedade e qualidade de vida dos individuos.",
   },
   {
     id: 2,
     src: "/cards/vehicle-plate.jpg",
     title: "Reconhecimento de Placas",
     alt: "slide-image-2",
-    text: "A Iluminação Pública Inteligente utiliza sensores conectados que melhoram a eficiência energética e diminuem o consumo, reduzindo assim os gastos.",
     icon: "/img/facial.png",
   },
   {
@@ -134,42 +131,36 @@ const imgSegurança = [
     src: "/cards/facial.jpg",
     title: "Reconhecimento Facial",
     alt: "slide-image-3",
-    text: "A automação, aliada a Internet das Coisas permite conectar dispositivos e automatizar processos de forma rápida e segura",
   },
   {
     id: 4,
     src: "/cards/crown.jpg",
     title: "Detecção de Aglomerações",
     alt: "slide-image-4",
-    text: "Utilizamos sensores em conjunto com a Internet das Coisas para tornar mais eficaz a forma como lidamos com os dados captados.",
   },
   {
     id: 5,
     src: "/cards/count-people.jpg",
     title: "Contagem de Pessoas",
     alt: "slide-image-5",
-    text: "A Internet das Coisas (IoT) revolucionou a maneira como lidamos com o cotidiano. Dispositivos conectados reunem e transmitem dados de itens usados no dia a dia.",
   },
   {
     id: 6,
-    src: "/cards/facial.jpg",
+    src: "/cards/violence.jpg",
     title: "Detecção de Violência",
     alt: "slide-image-6",
-    text: "A Telegestão permite um controle inteligente dos recursos, resultanto numa enorme economia.",
   },
   {
     id: 7,
     src: "/cards/forense.jpg",
     title: "Busca forense",
     alt: "slide-image-6",
-    text: "A Telegestão permite um controle inteligente dos recursos, resultanto numa enorme economia.",
   },
   {
     id: 8,
     src: "/cards/fall.jpg",
     title: "Detecção de Queda",
     alt: "slide-image-6",
-    text: "A Telegestão permite um controle inteligente dos recursos, resultanto numa enorme economia.",
   },
 ];
 
@@ -208,51 +199,104 @@ export default function Home() {
   const [sendEmail, setSendEmail] = useState(false);
 
   const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [message, setMessage] = useState("");
+  const [nome, setNome] = useState("");
+  const [mensagem, setMensagem] = useState("");
+  const [error, setError] = useState({ email: "", nome: "", mensagem: "" });
 
   const [section, setSection] = useState("header-section");
   const [showMenu, setShowMenu] = useState(false);
 
-  function handleSubmit() {
-    console.log("MENSAGEM =>");
-    console.log(name);
-    console.log(email);
-    console.log(message);
+  async function handleSubmit(e: any) {
+    e.preventDefault();
+    let hasError = false;
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (email.length === 0) {
+      setError((state) => ({ ...state, email: "Insira o email" }));
+      hasError = true;
+    }
+    if (nome.length === 0) {
+      setError((state) => ({ ...state, nome: "Insira o nome" }));
+      hasError = true;
+    }
+    if (mensagem.length === 0) {
+      setError((state) => ({ ...state, mensagem: "Insira uma mensagem" }));
+      hasError = true;
+    }
+    if (email.length > 0 && !emailRegex.test(email)) {
+      setError((state) => ({ ...state, email: "Insira o email corretamente" }));
+      hasError = true;
+    }
+    if (!hasError) {
+      try {
+        const templateParams = {
+          from_name: nome,
+          message: mensagem,
+          email,
+        };
+
+        await emailjs
+          .send(
+            "service_fr2fcg5",
+            "template_un8iqbg",
+            templateParams,
+            "u7BSuXNFWvFluwyep"
+          )
+          .then((response) => {
+            setEmail("");
+            setNome("");
+            setMensagem("");
+            setSendEmail(true);
+          });
+      } catch (err) {
+        console.log(err);
+      }
+    }
   }
 
   function scrollToSection(section: string, height: number) {
     const toSection = document.getElementById(section);
     const yOffset = height;
+
+    //@ts-ignore
     const y = toSection?.getBoundingClientRect().top + window.scrollY + yOffset;
     window.scrollTo({ top: y, behavior: "smooth" });
     return setSection(section);
   }
 
+  useEffect(() => {
+    setTimeout(() => {
+      setSendEmail(false);
+    }, 3000);
+  }, [sendEmail]);
+
   return (
     <body
       id="header-section"
-      className="w-full h-screen bg-dark-0 overflow-hidden relative"
+      className="w-full h-screen bg-black-0 dark:bg-black-900 overflow-hidden relative"
     >
-      <header className="bg-dark-0 fixed w-full z-40 shadow-md">
+      <header className="bg-black-0 fixed w-full z-40 shadow-md">
         <div className=" w-full py-2 flex-row justify-center gap-16 bg-blue-600 hidden md:flex">
-          <div className="flex flex-row items-center text-zinc-50 text-base">
+          <div className="flex flex-row items-center text-zinc-50 ">
             <MdOutlineMail className="w-6 h-6 mr-2" />
             <p>inforpratica@inforpratica.com.br</p>
           </div>
           <div className="flex flex-row items-center text-zinc-50">
+            <LiaPhoneVolumeSolid className="w-6 h-6 mr-2" />
+
             <p>(35) 99852-1588</p>
           </div>
         </div>
 
         <nav className="bg-transparent w-full flex justify-between px-8 lg:px-0 lg:justify-evenly items-center py-4">
           <Image className="w-32" alt="logo" src={LogoImage} />
-          <div className="space-x-16 text-dark-400 hidden lg:flex xl:flex">
+          <div className="space-x-16 text-black-400 hidden lg:flex xl:flex">
             <button
               onClick={() => scrollToSection("header-section", 0)}
               className={classNames("", {
                 "text-blue-600 font-bold": section === "header-section",
-                "hover:text-dark-800": section !== "header-section",
+                "hover:text-black-800": section !== "header-section",
               })}
             >
               Home
@@ -261,7 +305,7 @@ export default function Home() {
               onClick={() => scrollToSection("about-section", -150)}
               className={classNames("", {
                 "text-blue-600 font-bold": section === "about-section",
-                "hover:text-dark-800": section !== "about-section",
+                "hover:text-black-800": section !== "about-section",
               })}
             >
               Sobre Nós
@@ -270,7 +314,7 @@ export default function Home() {
               onClick={() => scrollToSection("services-section", -100)}
               className={classNames("", {
                 "text-blue-600 font-bold": section === "services-section",
-                "hover:text-dark-800": section !== "services-section",
+                "hover:text-black-800": section !== "services-section",
               })}
             >
               Serviços
@@ -279,7 +323,7 @@ export default function Home() {
               onClick={() => scrollToSection("solutions-section", -150)}
               className={classNames("", {
                 "text-blue-600 font-bold": section === "solutions-section",
-                "hover:text-dark-800": section !== "solutions-section",
+                "hover:text-black-800": section !== "solutions-section",
               })}
             >
               Soluções
@@ -288,7 +332,7 @@ export default function Home() {
               onClick={() => scrollToSection("contact-section", -50)}
               className={classNames("", {
                 "text-blue-600 font-bold": section === "contact-section",
-                "hover:text-dark-800": section !== "contact-section",
+                "hover:text-black-800": section !== "contact-section",
               })}
             >
               Contato
@@ -296,25 +340,28 @@ export default function Home() {
           </div>
 
           <div className="space-x-8 items-center hidden lg:flex xl:flex">
-            <button className="hidden bg-dark-900 border-none w-16 space-x-2 h-8 rounded-full  items-center justify-center">
+            <button className="hidden bg-black-900 border-none w-16 space-x-2 h-8 rounded-full  items-center justify-center">
               <FaRegMoon />
               <FaRegSun className="w-3" />
             </button>
-            <div className="border-dark-200 border-2 border-solid w-32 h-12 rounded-full flex items-center justify-center">
-              <Link href={"/"} className="text-dark-400">
+            {/* <div className="border-black-200 border-2 border-solid w-32 h-12 rounded-full flex items-center justify-center">
+              <button
+                onClick={() => scrollToSection("contact-section", -50)}
+                className="text-black-400"
+              >
                 Contrate-nos
-              </Link>
-            </div>
+              </button>
+            </div> */}
           </div>
           <button onClick={() => setShowMenu(true)}>
-            <IoMenu className="text-dark-1000 w-8 h-8 flex lg:hidden xl:hidden" />
+            <IoMenu className="text-black-1000 w-8 h-8 flex lg:hidden xl:hidden" />
           </button>
         </nav>
       </header>
       {showMenu && (
         <div
           className={classNames(
-            "bg-dark-1000 w-screen h-screen fixed z-50 opacity-50 lg:hidden",
+            "bg-black-1000 w-screen h-screen fixed z-50 opacity-50 lg:hidden",
             {
               flex: showMenu,
             }
@@ -324,7 +371,7 @@ export default function Home() {
       )}
 
       <section
-        className={`bg-dark-0 w-[calc(45vw)] sm:w-[calc(40vw)] md:w-[calc(30vw)] 
+        className={`bg-black-0 w-[calc(45vw)] sm:w-[calc(40vw)] md:w-[calc(30vw)] 
             h-screen fixed z-50 right-0 flex lg:hidden flex-col transition-transform duration-500  ${
               showMenu ? "translate-x-0" : "translate-x-full"
             }`}
@@ -332,7 +379,7 @@ export default function Home() {
         <div className=" w-full flex items-center justify-center border-b-[calc(1px)]">
           <Image className="w-32" alt="logo" src={LogoImage} />
         </div>
-        <div className=" w-full text-dark-1000 flex flex-col text-xl mt-6 ml-6 gap-y-4">
+        <div className=" w-full text-black-1000 flex flex-col text-xl mt-6 ml-6 gap-y-4">
           <button
             onClick={() => {
               scrollToSection("header-section", 0);
@@ -340,7 +387,7 @@ export default function Home() {
             }}
             className={classNames("text-left font-semibold", {
               "text-blue-600 font-bold ": section === "header-section",
-              "hover:text-dark-800": section !== "header-section",
+              "hover:text-black-800": section !== "header-section",
             })}
           >
             Home
@@ -352,7 +399,7 @@ export default function Home() {
             }}
             className={classNames("text-left font-semibold", {
               "text-blue-600 font-bold": section === "about-section",
-              "hover:text-dark-800": section !== "about-section",
+              "hover:text-black-800": section !== "about-section",
             })}
           >
             Sobre Nós
@@ -364,7 +411,7 @@ export default function Home() {
             }}
             className={classNames("text-left font-semibold", {
               "text-blue-600 font-bold": section === "services-section",
-              "hover:text-dark-800": section !== "services-section",
+              "hover:text-black-800": section !== "services-section",
             })}
           >
             Serviços
@@ -376,7 +423,7 @@ export default function Home() {
             }}
             className={classNames("text-left font-semibold", {
               "text-blue-600 font-bold ": section === "solutions-section",
-              "hover:text-dark-800": section !== "solutions-section",
+              "hover:text-black-800": section !== "solutions-section",
             })}
           >
             Soluções
@@ -388,7 +435,7 @@ export default function Home() {
             }}
             className={classNames("text-left font-semibold", {
               "text-blue-600 font-bold": section === "contact-section",
-              "hover:text-dark-800": section !== "contact-section",
+              "hover:text-black-800": section !== "contact-section",
             })}
           >
             Contato
@@ -396,7 +443,7 @@ export default function Home() {
         </div>
       </section>
 
-      <main className="w-full overflow-hidden bg-dark-0 ">
+      <main className="w-full overflow-hidden bg-black-0 ">
         {/*  HOME */}
         <section
           className="relative grid h-[calc(100vh)] md:h-[calc(80vh)] mt-32 md:mt-56 grid-cols-[10vw_80vw_10vw]
@@ -408,43 +455,31 @@ export default function Home() {
           >
             <div className="grid md:grid-rows-[10%_90%] w-[calc(40vw)] md:w-[calc(55vw)]">
               <div className="row-start-2 gap-8 flex flex-col 400 w-[calc(80vw)] md:w-auto">
-                <div className="text-dark-900 font-bold text-6xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl">
+                <div className="text-black-900 font-bold text-6xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl">
                   <h1>Soluções Tech </h1>
                   <h1>Sob Medida Para</h1>
                   <h1 className="text-blue-600">Você</h1>
                 </div>
                 <div className="hidden md:flex gap-8 flex-col">
-                  <p className="text-dark-400 italic md:text-sm text-md lg:text-lg md:w-[calc(38vw)] lg:w-[calc(45vw)] ">
+                  <p className="text-black-400 italic md:text-sm text-md lg:text-lg md:w-[calc(38vw)] lg:w-[calc(45vw)] ">
                     Oferecemos soluções em tecnologia com foco em Internet das
                     Coisas & Cidades Inteligentes. Entre em contato e saiba
                     mais!
                   </p>
                   <button
-                    onClick={() => setSendEmail((state) => !state)}
+                    // onClick={() => setSendEmail((state) => !state)}
+                    onClick={() => scrollToSection("contact-section", -50)}
                     className={classNames(
-                      "hover:bg-blue-500 hover:border-blue-500 self-start border-2 py-4 duration-500 overflow-hidden  pr-16 relative text-dark-1000 flex items-center gap-4 rounded-full bg-blue-600 border-blue-600",
-                      {
-                        "pr-[calc(25vw)]": sendEmail,
-                      }
+                      "hover:bg-blue-500 hover:border-blue-500 self-start border-2 py-4 duration-500 overflow-hidden  pr-16 relative text-black-1000 flex items-center gap-4 rounded-full bg-blue-600 border-blue-600"
+                      // {
+                      //   "pr-[calc(25vw)]": sendEmail,
+                      // }
                     )}
                   >
-                    <span className="pl-4 text-dark-0 font-bold ">
+                    <span className="pl-4 text-black-0 font-bold ">
                       Contrate-nos
                     </span>
-                    <div>
-                      <input
-                        onClick={() => setSendEmail(false)}
-                        placeholder="Digite seu E-mail"
-                        className={classNames(
-                          "flex rounded-full duration-500 absolute self-center top-3 pr-44 outline-none pl-4 py-1 transition-all",
-                          {
-                            "pr-0 opacity-0": !sendEmail,
-                            "pr-44 opacity-100 z-50": sendEmail,
-                          }
-                        )}
-                      />
-                    </div>
-                    <i className="text-dark-1000 right-2 w-12 h-12 flex items-center justify-center absolute rounded-full bg-dark-0">
+                    <i className="text-black-1000 right-2 w-12 h-12 flex items-center justify-center absolute rounded-full bg-black-0">
                       <FaPaperPlane className="self-center h-8 w-6 mr-1" />
                     </i>
                   </button>
@@ -455,12 +490,13 @@ export default function Home() {
 
           <article
             className="flex flex-col gap-4  h-full items-center
-               text-dark-900 duration-100 justify-start md:absolute z-10 col-start-2
+               text-black-900 duration-100 justify-start md:absolute z-10 col-start-2
                w-[calc(80vw)] md:w-full row-start-2 md:row-start-1 md:col-start-3 right-[calc(10vw)]"
           >
             <div className="banner-size w-full h-full justify-end flex flex-col items-start md:pt-8 lg:mt-0 lg:items-start">
               <div className="w-full h-min relative flex justify-end">
                 <Image
+                  priority
                   src={"/img/bg-home.png"}
                   width={1000}
                   height={1000}
@@ -469,36 +505,23 @@ export default function Home() {
                 />
               </div>
               <div className="flex md:hidden gap-8 flex-col">
-                <p className="text-dark-400 italic md:text-sm text-md lg:text-lg md:w-[calc(38vw)] lg:w-auto ">
+                <p className="text-black-400 italic md:text-sm text-md lg:text-lg md:w-[calc(38vw)] lg:w-auto ">
                   Oferecemos soluções em tecnologia com foco em Internet das
                   Coisas & Cidades Inteligentes. Entre em contato e saiba mais!
                 </p>
                 <button
-                  onClick={() => setSendEmail((state) => !state)}
+                  onClick={() => scrollToSection("contact-section", -50)}
                   className={classNames(
-                    "hover:bg-blue-500 hover:border-blue-500 self-start border-2 py-4 duration-500 overflow-hidden  pr-16 relative text-dark-1000 flex items-center gap-4 rounded-full bg-blue-600 border-blue-600",
-                    {
-                      "pr-[calc(25vw)]": sendEmail,
-                    }
+                    "hover:bg-blue-500 hover:border-blue-500 self-start border-2 py-4 duration-500 overflow-hidden  pr-16 relative text-black-1000 flex items-center gap-4 rounded-full bg-blue-600 border-blue-600"
+                    // {
+                    //   "pr-[calc(25vw)]": sendEmail,
+                    // }
                   )}
                 >
-                  <span className="pl-4 text-dark-0 font-bold">
+                  <span className="pl-4 text-black-0 font-bold">
                     Contrate-nos
                   </span>
-                  <div>
-                    <input
-                      onClick={() => setSendEmail(false)}
-                      placeholder="Digite seu E-mail"
-                      className={classNames(
-                        "flex rounded-full duration-500 absolute self-center top-3 pr-44 outline-none pl-4 py-1 transition-all",
-                        {
-                          "pr-0 opacity-0": !sendEmail,
-                          "pr-44 opacity-100 z-50": sendEmail,
-                        }
-                      )}
-                    />
-                  </div>
-                  <i className="text-dark-1000 right-2 w-12 h-12 flex items-center justify-center absolute rounded-full bg-dark-0">
+                  <i className="text-black-1000 right-2 w-12 h-12 flex items-center justify-center absolute rounded-full bg-black-0">
                     <FaPaperPlane className="self-center h-8 w-6 mr-1" />
                   </i>
                 </button>
@@ -527,7 +550,7 @@ export default function Home() {
                 hidden lg:flex w-[calc(40vw)] h-full"
             />
             <div className="row-start-1 h-full flex justify-center items-center w-[calc(80vw)] lg:w-[calc(40vw)]">
-              <div className="flex flex-col gap-y-8 text-dark-1000 w-full lg:w-[calc(30vw)]">
+              <div className="flex flex-col gap-y-8 text-black-1000 w-full lg:w-[calc(30vw)]">
                 <h6 className="text-center lg:text-left text-5xl font-bold">
                   Sobre Nós
                 </h6>
@@ -548,13 +571,13 @@ export default function Home() {
           >
             <div className="row-start-2 h-max lg:h-full flex sm:justify-center lg:items-center w-full lg:w-[calc(40vw)]">
               <div
-                className="flex h-max lg:h-full flex-col gap-y-4 relative text-dark-1000
+                className="flex h-max lg:h-full flex-col gap-y-4 relative text-black-1000
                 w-full sm:w-[calc(70vw)] lg:w-[calc(35vw)] pt-8 lg:pt:0"
               >
                 {aboutItens.map((item, index) => (
                   <div className=" flex gap-x-4" key={item.alt}>
-                    <div className="bg-dark-0 z-20 h-max w-12">
-                      <BsPatchCheckFill className="w-12 h-12 text-blue-600  bg-dark-0" />
+                    <div className="bg-black-0 z-20 h-max w-12">
+                      <BsPatchCheckFill className="w-12 h-12 text-blue-600  bg-black-0" />
                       <div
                         className={classNames("", {
                           "line-height bg-blue-600 w-[calc(2px)] h-[calc(9vh)] lg:h-[calc(10vh)] left-6 absolute z-10":
@@ -595,7 +618,7 @@ export default function Home() {
           id="services-section"
           className="grid grid-cols-[10vw_80vw_10vw] h-[calc(250vh)] md:h-[calc(120vh)]"
         >
-          <article className="flex flex-col gap-y-4 col-start-2 text-center items-center justify-center text-dark-1000 w-full h-[calc(10vh)]]">
+          <article className="flex flex-col gap-y-4 col-start-2 text-center items-center justify-center text-black-1000 w-full h-[calc(10vh)]]">
             <h6 className="text-xl md:text-2xl font-semibold w-max text-blue-600">
               Nossos Serviços
             </h6>
@@ -614,9 +637,9 @@ export default function Home() {
                   scale: 0.95,
                   transition: { duration: 0.5 },
                 }}
-                className="h-96 md:h-[calc(35vh)] lg:h-[calc(40vh)] md:w-[calc(30vw)] lg:w-[calc(22vw)] xl:w-[calc(22vw)] px-6 py-6  bg-dark-0 z-30 
-                flex flex-col gap-y-6 rounded-lg text-dark-1000 shadow-xl
-                transition-colors duration-300 hover:text-dark-0 hover:bg-blue-600"
+                className="h-96 md:h-[calc(35vh)] lg:h-[calc(40vh)] md:w-[calc(30vw)] lg:w-[calc(22vw)] xl:w-[calc(22vw)] px-6 py-6  bg-black-0 z-30 
+                flex flex-col gap-y-6 rounded-lg text-black-1000 shadow-xl
+                transition-colors duration-300 hover:text-black-0 hover:bg-blue-600"
               >
                 <div className="w-max h-max rounded-xl">
                   <Image
@@ -648,7 +671,7 @@ export default function Home() {
           className="mt-72 lg:mt-36 grid grid-cols-[10vw_80vw_10vw] h-[calc(150vh)] grid-rows-[50vh_50vh]"
         >
           <article className="row-start-1 h-[calc(25vh)] 2xl:h-auto 600 w-full col-start-2">
-            <div className="flex flex-col gap-y-4 text-dark-1000 md:w-full lg:w-[calc(42vw)]">
+            <div className="flex flex-col gap-y-4 text-black-1000 md:w-full lg:w-[calc(42vw)]">
               <h6 className="text-2xl font-semibold w-max text-blue-600">
                 Nossas Soluções
               </h6>
@@ -657,7 +680,7 @@ export default function Home() {
               </h4>
             </div>
           </article>
-          <article className="mt-16 sm:mt-0 row-start-2 200 w-full h-full col-start-2 text-dark-1000 flex flex-col items-center justify-center gap-y-20">
+          <article className="mt-16 sm:mt-0 row-start-2 200 w-full h-full col-start-2 text-black-1000 flex flex-col items-center justify-center gap-y-20">
             <div
               className="w-full h-[calc(45vh)] rounded-lg 500
               flex items-center flex-col justify-center gap-x-12 gap-y-8 relative"
@@ -685,22 +708,27 @@ export default function Home() {
         >
           <article className="w-full h-full col-start-2 row-start-1 lg:row-start-2">
             <div className="w-full lg:w-[calc(40vw)] 2xl:w-[calc(30vw)] h-full flex flex-col items-center">
-              <div className="flex flex-col gap-y-8 text-dark-1000 w-full">
+              <div className="flex flex-col gap-y-8 text-black-1000 w-full">
                 <h6 className="text-5xl font-bold w-full">Fale Conosco</h6>
-                <h6 className="text-md font-semibold w-full text-dark-900">
+                <h6 className="text-md font-semibold w-full text-black-900">
                   Sinta-se livre para contactar-nos a qualquer hora. Entraremos
                   em contato com você assim que pudermos.
                 </h6>
               </div>
 
-              <div className="w-full h-full flex flex-col justify-between gap-y-6 pt-12">
+              <form
+                onSubmit={handleSubmit}
+                className="w-full h-full flex flex-col justify-between gap-y-6 pt-12"
+              >
                 <div className="flex flex-col gap-y-10">
                   <InputForm
                     name={"nome"}
                     icon={FaRegUser}
-                    state={name}
-                    setState={setName}
+                    state={nome}
+                    setState={setNome}
                     maxLength={50}
+                    error={error.nome}
+                    setError={setError}
                   />
                   <InputForm
                     name={"email"}
@@ -708,29 +736,44 @@ export default function Home() {
                     state={email}
                     setState={setEmail}
                     maxLength={100}
+                    error={error.email}
+                    setError={setError}
                   />
                   <InputForm
                     name={"mensagem"}
                     icon={MdOutlineChat}
-                    state={message}
-                    setState={setMessage}
+                    state={mensagem}
+                    setState={setMensagem}
                     maxLength={1000}
+                    error={error.mensagem}
+                    setError={setError}
                   />
                 </div>
-                <div className="flex justify-start w-full">
+                <div className="flex justify-start w-full flex-col relative ">
+                  <span
+                    className={classNames(
+                      "text-center text-green-600 font-semibold absolute -top-8 self-center transition-all duration-300",
+                      {
+                        "translate-y-0": sendEmail,
+                        "translate-y-full opacity-0": !sendEmail,
+                      }
+                    )}
+                  >
+                    Email enviado com sucesso!
+                  </span>
                   <button
-                    onClick={handleSubmit}
-                    className="w-full h-12 rounded-md bg-dark-1000 font-semibold transition-all duration-300
-                    hover:bg-blue-600 border-2 border-dark-1000 hover:border-dark-1000 hover:text-dark-0 bottom-0"
+                    type="submit"
+                    className="w-full h-12 rounded-md bg-black-1000 font-semibold transition-all duration-300
+                    hover:bg-blue-600 border-2 border-black-1000 hover:border-black-1000 text-black-0 bottom-0"
                   >
                     Enviar
                   </button>
                 </div>
-              </div>
+              </form>
             </div>
           </article>
           <article
-            className="w-full lg:w-[calc(50vw)] h-full bg-dark-1000 z-20 relative flex 
+            className="w-full lg:w-[calc(50vw)] h-full bg-black-1000 z-20 relative flex 
             col-start-2 lg:col-start-3 
             row-start-2 lg:row-start-2 "
           >
@@ -738,22 +781,22 @@ export default function Home() {
             <div className="visible lg:hidden w-12 h-12 bg-blue-600 absolute -right-4 -bottom-4 z-10" />
             <div className="w-full lg:pl-12 flex justify-center lg:justify-start items-center">
               <div className="flex-col gap-y-8 w-[calc(60vw)] md:w-[calc(45vw)] lg:w-max flex">
-                <p className="w-full text-3xl font-semibold text-dark-100">
+                <p className="w-full text-3xl font-semibold text-black-100">
                   Informações
                 </p>
-                <p className="text-dark-200 hover:text-blue-600 w-full text-md flex items-center gap-x-4  text-start">
+                <p className="text-black-200 hover:text-blue-600 w-full text-md flex items-center gap-x-4  text-start">
                   <BsBuilding className="w-10 h-10" />
                   Pouso Alegre - Minas Gerais, Brasil
                 </p>
-                <p className="text-dark-200 hover:text-blue-600 w-full text-md flex items-center gap-x-4  text-start">
+                <p className="text-black-200 hover:text-blue-600 w-full text-md flex items-center gap-x-4  text-start">
                   <LiaPhoneVolumeSolid className="w-10 h-10" />
                   Telefone: (35) 99852-1588
                 </p>
-                <p className="text-dark-200 hover:text-blue-600 w-full text-md flex items-center gap-x-4  text-start">
+                <p className="text-black-200 hover:text-blue-600 w-full text-md flex items-center gap-x-4  text-start">
                   <MdOutlineMail className="w-10 h-10" />
-                  laerciosasso@infopratica.com.br
+                  inforpratica@inforpratica.com.br
                 </p>
-                <p className="text-dark-200 hover:text-blue-600 w-full text-md flex items-center gap-x-4  text-start">
+                <p className="text-black-200 hover:text-blue-600 w-full text-md flex items-center gap-x-4  text-start">
                   <BsClockHistory className="w-10 h-10" />
                   08:00 - 18:00
                 </p>
@@ -766,8 +809,8 @@ export default function Home() {
 
         {/* FOOTER */}
         <footer
-          className="bg-dark-1000 grid grid-cols-[5vw_90vw_5vw] lg:grid-cols-[10vw_80vw_10vw] 
-          grid-rows-1 w-full flex-col  text-dark-0 items-end justify-end h-[calc(50vh)] md:h-[calc(30vh)]"
+          className="bg-black-1000 grid grid-cols-[5vw_90vw_5vw] lg:grid-cols-[10vw_80vw_10vw] 
+          grid-rows-1 w-full flex-col  text-black-0 items-end justify-end h-[calc(50vh)] md:h-[calc(30vh)]"
         >
           <div
             className="col-start-2 w-full h-[calc(40vh)] md:h-[calc(25vh)] flex-col md:flex-row
@@ -789,7 +832,7 @@ export default function Home() {
                 </p>
                 <p className="w-full text-lg flex items-end gap-x-2 text-start">
                   <MdOutlineMail className="w-6 h-6" />
-                  laerciosasso@infoprratica.com.br
+                  inforpratica@inforpratica.com.br
                 </p>
               </div>
             </div>
@@ -801,7 +844,7 @@ export default function Home() {
                 const Icon = icon.src;
                 return (
                   <button
-                    className=" text-dark-0 bg-dark-1000 rounded-2xl flex items-center justify-center 
+                    className=" text-black-0 bg-black-1000 rounded-2xl flex items-center justify-center 
                     h-12 w-12 hover:bg-blue-600 hover:scale-110 transition-all"
                     key={i}
                   >
