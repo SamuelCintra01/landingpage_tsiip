@@ -272,11 +272,12 @@ export default function Home() {
   }, [sendEmail]);
 
   return (
-    <body
+    <section
       id="header-section"
-      className="w-full h-screen bg-black-0 dark:bg-black-900 overflow-hidden relative"
+      className="w-full h-screen bg-black-0 dark:bg-black-900 
+      overflow-hidden relative grid grid-rows-[12vh_auto] gap-2"
     >
-      <header className="bg-black-0 fixed w-full z-40 shadow-md">
+      <header className="bg-black-0 fixed w-full z-40 shadow-md row-start-1">
         <div className=" w-full py-2 flex-row justify-center gap-16 bg-blue-600 hidden md:flex">
           <div className="flex flex-row items-center text-zinc-50 ">
             <MdOutlineMail className="w-6 h-6 mr-2" />
@@ -443,10 +444,10 @@ export default function Home() {
         </div>
       </section>
 
-      <main className="w-full overflow-hidden bg-black-0 ">
+      <main className="w-full bg-black-0 h-full overflow-x-hidden overflow-y-scroll row-start-2">
         {/*  HOME */}
         <section
-          className="relative grid h-[calc(100vh)] md:h-[calc(80vh)] mt-32 md:mt-56 grid-cols-[10vw_80vw_10vw]
+          className="relative grid h-[calc(100vh)] md:h-[calc(80vh)] mt-16 md:mt-36 grid-cols-[10vw_80vw_10vw]
             grid-rows-[auto_auto] md:grid-rows-1 md:grid-cols-[10vw_20vw_60vw_10vw] lg:grid-cols-[10vw_40vw_40vw_10vw]"
         >
           <article
@@ -860,6 +861,6 @@ export default function Home() {
           </div>
         </footer>
       </main>
-    </body>
+    </section>
   );
 }
